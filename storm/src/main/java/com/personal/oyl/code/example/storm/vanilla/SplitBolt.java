@@ -10,11 +10,12 @@ import org.apache.storm.tuple.Fields;
 import org.apache.storm.tuple.Tuple;
 import org.apache.storm.tuple.Values;
 
+@SuppressWarnings("serial")
 public class SplitBolt extends BaseRichBolt {
 
     private OutputCollector collector;
     @Override
-    public void prepare(Map stormConf, TopologyContext context, OutputCollector collector) {
+    public void prepare(@SuppressWarnings("rawtypes") Map stormConf, TopologyContext context, OutputCollector collector) {
         this.collector = collector;
     }
 

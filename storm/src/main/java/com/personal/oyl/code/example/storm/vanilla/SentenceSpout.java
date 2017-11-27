@@ -11,6 +11,7 @@ import org.apache.storm.tuple.Fields;
 import org.apache.storm.tuple.Values;
 import org.apache.storm.utils.Utils;
 
+@SuppressWarnings("serial")
 public class SentenceSpout extends BaseRichSpout {
     private static Long count = 1l;
     private Map<Long, Values> pending;
@@ -21,7 +22,7 @@ public class SentenceSpout extends BaseRichSpout {
     };
     
     @Override
-    public void open(Map conf, TopologyContext context, SpoutOutputCollector collector) {
+    public void open(@SuppressWarnings("rawtypes") Map conf, TopologyContext context, SpoutOutputCollector collector) {
         this.collector = collector;
         pending = new HashMap<>();
     }
