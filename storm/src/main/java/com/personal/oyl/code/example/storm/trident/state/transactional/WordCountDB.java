@@ -31,7 +31,9 @@ public class WordCountDB implements State {
         if (null == transVal) {
             inner.put(word, new TransactionalValue<>(currTxid.longValue(), count));
         } else if (currTxid > transVal.getTxid()) {
-            inner.put(word, new TransactionalValue<>(currTxid.longValue(), count));
+            Long prev = transVal.getVal();
+            Long curr = prev + count;
+            inner.put(word, new TransactionalValue<>(currTxid.longValue(), curr));
         } else if (currTxid == transVal.getTxid()) {
             System.out.println("Iginre...");
         } else if (currTxid < transVal.getTxid()) {

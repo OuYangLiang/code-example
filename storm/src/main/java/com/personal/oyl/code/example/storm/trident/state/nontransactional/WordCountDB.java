@@ -18,12 +18,17 @@ public class WordCountDB implements State {
     }
 
 
-    private Map<String, Integer> inner = new HashMap<>();
-    public void setCount(String word, Integer count) {
-        inner.put(word, count);
+    private Map<String, Long> inner = new HashMap<>();
+    public void setCount(String word, Long count) {
+        Long prev = inner.get(word);
+        if (null == prev) {
+            inner.put(word, 1l);
+        } else {
+            inner.put(word, prev + 1);
+        }
     }
     
-    public int getCount(String word) {
+    public long getCount(String word) {
         return null == inner.get(word) ? 0 : inner.get(word);
     }
 }

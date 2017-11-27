@@ -13,9 +13,8 @@ public class WordCountDBUpdater extends BaseStateUpdater<WordCountDB> {
     public void updateState(WordCountDB state, List<TridentTuple> tuples, TridentCollector collector) {
         for (TridentTuple tuple : tuples) {
             String word = tuple.getString(0);
-            Long curr = state.getCount(word);
             Long count = tuple.getLong(1);
-            state.setCount(word, null == curr ? count : curr + count);
+            state.setCount(word, count);
         }
     }
 
