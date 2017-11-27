@@ -11,9 +11,9 @@ import org.apache.storm.tuple.Fields;
 import org.apache.storm.tuple.Values;
 import org.apache.storm.utils.Utils;
 
-import com.personal.oyl.code.example.storm.trident.util.QueryWordCountDB;
-import com.personal.oyl.code.example.storm.trident.util.WordCountDBFactory;
-import com.personal.oyl.code.example.storm.trident.util.WordCountDBUpdater;
+import com.personal.oyl.code.example.storm.trident.state.nontransactional.QueryWordCountDB;
+import com.personal.oyl.code.example.storm.trident.state.nontransactional.WordCountDBFactory;
+import com.personal.oyl.code.example.storm.trident.state.nontransactional.WordCountDBUpdater;
 
 public class App2 {
     public static void main(String[] args) {
