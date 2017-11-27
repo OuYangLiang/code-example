@@ -18,7 +18,7 @@ import com.personal.oyl.code.example.storm.trident.state.nontransactional.WordCo
 public class App2 {
     public static void main(String[] args) {
         @SuppressWarnings("unchecked")
-        FixedBatchSpout spout = new FixedBatchSpout(new Fields("sentence"), 3, new Values("how are you"),
+        FixedBatchSpout spout = new FixedBatchSpout(new Fields("sentence"), 1, new Values("how are you"),
                 new Values("nice to meet you"), new Values("what a good day"));
         spout.setCycle(false);
 
@@ -35,7 +35,7 @@ public class App2 {
         LocalCluster cluster = new LocalCluster();
         cluster.submitTopology("drpc-demo", conf, topology.build());
         
-        Utils.sleep(20000);
+        Utils.sleep(10000);
         System.out.println("DRPC RESULT: " + drpc.execute("word", "how"));
         System.out.println("DRPC RESULT: " + drpc.execute("word", "are"));
         System.out.println("DRPC RESULT: " + drpc.execute("word", "you"));
