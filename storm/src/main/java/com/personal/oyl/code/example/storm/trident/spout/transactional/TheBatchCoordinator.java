@@ -6,7 +6,18 @@ public class TheBatchCoordinator implements ITridentSpout.BatchCoordinator<TheMe
 
     @Override
     public TheMetadata initializeTransaction(long txid, TheMetadata prevMetadata, TheMetadata currMetadata) {
-        // TODO Auto-generated method stub
+        System.out.println("Init transaction: " + txid);
+        
+        if (null != prevMetadata)
+            System.out.println("Prev Metadata" + prevMetadata.getIndex());
+        if (null != currMetadata)
+            System.out.println("Curr Metadata" + currMetadata.getIndex());
+        
+        if (txid <= 3) {
+            TheMetadata rlt = new TheMetadata();
+            rlt.setIndex(Long.valueOf(txid).intValue() -1);
+            return rlt;
+        }
         return null;
     }
 
@@ -18,8 +29,11 @@ public class TheBatchCoordinator implements ITridentSpout.BatchCoordinator<TheMe
 
     @Override
     public boolean isReady(long txid) {
-        // TODO Auto-generated method stub
-        return true;
+        if (txid <= 3) {
+            return true;
+        }
+        
+        return false;
     }
 
     @Override

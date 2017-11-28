@@ -24,6 +24,7 @@ public class TheEmitter implements ITridentSpout.Emitter<TheMetadata> {
             return;
         }
         System.out.println(tx);
+        System.out.println("Metadata in emitBatch: " + coordinatorMeta.getIndex());
         String sentence = list.get(tx.getTransactionId().intValue() - 1 );
         collector.emit(new Values(sentence));
     }
