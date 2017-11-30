@@ -10,19 +10,17 @@ import org.apache.storm.tuple.Values;
 
 @SuppressWarnings("serial")
 public class QueryWordCountDB extends BaseQueryFunction<WordCountDB, Long> {
-
     @Override
     public List<Long> batchRetrieve(WordCountDB state, List<TridentTuple> args) {
-        List<Long> list = new LinkedList<>();
+        List<String> words = new LinkedList<>();
         for (TridentTuple tuple : args) {
-            list.add(state.getCount(tuple.getString(0)));
+            words.add(tuple.getString(0));
         }
-        return list;
+        return state.getCount(words);
     }
 
     @Override
     public void execute(TridentTuple tuple, Long result, TridentCollector collector) {
         collector.emit(new Values(result));
     }
-
 }

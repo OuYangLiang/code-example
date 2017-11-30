@@ -1,5 +1,6 @@
 package com.personal.oyl.code.example.storm.trident.state.transactional;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.storm.trident.operation.TridentCollector;
@@ -11,11 +12,13 @@ public class WordCountDBUpdater extends BaseStateUpdater<WordCountDB> {
 
     @Override
     public void updateState(WordCountDB state, List<TridentTuple> tuples, TridentCollector collector) {
+        List<String> words = new LinkedList<>();
+        List<Long> counts  = new LinkedList<>();
         for (TridentTuple tuple : tuples) {
-            String word = tuple.getString(0);
-            Long count = tuple.getLong(1);
-            state.setCount(word, count);
+            words.add(tuple.getString(0));
+            counts.add(tuple.getLong(1));
         }
+        state.incrCount(words, counts);
     }
 
 }

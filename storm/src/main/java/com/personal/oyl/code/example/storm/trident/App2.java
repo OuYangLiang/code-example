@@ -5,6 +5,7 @@ import org.apache.storm.LocalCluster;
 import org.apache.storm.LocalDRPC;
 import org.apache.storm.trident.TridentState;
 import org.apache.storm.trident.TridentTopology;
+import org.apache.storm.trident.operation.builtin.Count;
 import org.apache.storm.trident.testing.FixedBatchSpout;
 import org.apache.storm.trident.testing.Split;
 import org.apache.storm.tuple.Fields;
@@ -25,7 +26,10 @@ public class App2 {
         TridentTopology topology = new TridentTopology();
         TridentState wordCounts = topology.newStream("spout1", spout)
                 .each(new Fields("sentence"), new Split(), new Fields("word"))
-                .partitionPersist(new WordCountDBFactory(), new Fields("word"), new WordCountDBUpdater()).parallelismHint(6);
+                .groupBy(new Fields("word"))
+                .aggregate(new Count(), new Fields("count"))
+                .toStream()
+                .partitionPersist(new WordCountDBFactory(), new Fields("word", "count"), new WordCountDBUpdater()).parallelismHint(1);
 
         LocalDRPC drpc = new LocalDRPC();
         topology.newDRPCStream("word", drpc)
