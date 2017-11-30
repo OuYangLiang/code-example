@@ -12,9 +12,9 @@ import org.apache.storm.tuple.Fields;
 import org.apache.storm.tuple.Values;
 import org.apache.storm.utils.Utils;
 
-import com.personal.oyl.code.example.storm.trident.state.transactional.QueryWordCountDB;
-import com.personal.oyl.code.example.storm.trident.state.transactional.WordCountDBFactory;
-import com.personal.oyl.code.example.storm.trident.state.transactional.WordCountDBUpdater;
+import com.personal.oyl.code.example.storm.trident.state.QueryWordCountDB;
+import com.personal.oyl.code.example.storm.trident.state.WordCountDBFactory;
+import com.personal.oyl.code.example.storm.trident.state.WordCountDBUpdater;
 
 public class App3 {
     public static void main(String[] args) {
@@ -29,7 +29,7 @@ public class App3 {
                 .groupBy(new Fields("word"))
                 .aggregate(new Count(), new Fields("count"))
                 .toStream()
-                .partitionPersist(new WordCountDBFactory(), new Fields("word", "count"), new WordCountDBUpdater()).parallelismHint(1);
+                .partitionPersist(WordCountDBFactory.transactional, new Fields("word", "count"), new WordCountDBUpdater()).parallelismHint(1);
 
         LocalDRPC drpc = new LocalDRPC();
         topology.newDRPCStream("word", drpc)

@@ -1,14 +1,14 @@
-package com.personal.oyl.code.example.storm.trident.state.opaque;
+package com.personal.oyl.code.example.storm.trident.state;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.storm.trident.state.OpaqueValue;
 import org.apache.storm.trident.state.State;
+import org.apache.storm.trident.state.TransactionalValue;
 
-public class WordCountDB implements State {
+public class TransactionalWordCountDB extends WordCountDB implements State {
     
     private Long currTxid;
 
@@ -25,25 +25,23 @@ public class WordCountDB implements State {
     }
 
 
-    private Map<String, OpaqueValue<Long>> inner = new HashMap<>();
+    private Map<String, TransactionalValue<Long>> inner = new HashMap<>();
     public void incrCount(List<String> words, List<Long> counts) {
         int size = words.size();
         for (int i = 0; i < size; i++) {
             String word = words.get(i);
             Long count = counts.get(i);
-            OpaqueValue<Long> transVal = inner.get(word);
+            TransactionalValue<Long> transVal = inner.get(word);
             if (null == transVal) {
-                inner.put(word, new OpaqueValue<>(currTxid.longValue(), count));
-            } else if (currTxid > transVal.getCurrTxid()) {
-                Long prev = transVal.getCurr();
+                inner.put(word, new TransactionalValue<>(currTxid.longValue(), count));
+            } else if (currTxid > transVal.getTxid()) {
+                Long prev = transVal.getVal();
                 Long curr = prev + count;
-                inner.put(word, new OpaqueValue<>(currTxid.longValue(), curr, prev));
-            } else if (currTxid == transVal.getCurrTxid()) {
-                Long prev = transVal.getPrev();
-                Long curr = prev + count;
-                inner.put(word, new OpaqueValue<>(currTxid.longValue(), curr, prev));
-            } else if (currTxid < transVal.getCurrTxid()) {
-                throw new RuntimeException("impossible case: currTxid < transVal.getCurrTxid()...");
+                inner.put(word, new TransactionalValue<>(currTxid.longValue(), curr));
+            } else if (currTxid == transVal.getTxid()) {
+                System.out.println("Iginre...");
+            } else if (currTxid < transVal.getTxid()) {
+                throw new RuntimeException("impossible case: currTxid < transVal.getTxid()...");
             }
         }
     }
@@ -51,11 +49,11 @@ public class WordCountDB implements State {
     public List<Long> getCount(List<String> words) {
         List<Long> list = new LinkedList<>();
         for (String word : words) {
-            OpaqueValue<Long> transVal = inner.get(word);
+            TransactionalValue<Long> transVal = inner.get(word);
             if (null == transVal) {
                 list.add(Long.valueOf(0l));
             }
-            list.add(transVal.getCurr());
+            list.add(transVal.getVal());
         }
         return list;
     }

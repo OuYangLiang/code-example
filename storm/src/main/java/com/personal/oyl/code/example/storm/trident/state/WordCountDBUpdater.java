@@ -1,4 +1,4 @@
-package com.personal.oyl.code.example.storm.trident.state.nontransactional;
+package com.personal.oyl.code.example.storm.trident.state;
 
 import java.util.LinkedList;
 import java.util.List;

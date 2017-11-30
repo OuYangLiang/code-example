@@ -1,4 +1,4 @@
-package com.personal.oyl.code.example.storm.trident.state.opaque;
+package com.personal.oyl.code.example.storm.trident.state;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -10,7 +10,6 @@ import org.apache.storm.tuple.Values;
 
 @SuppressWarnings("serial")
 public class QueryWordCountDB extends BaseQueryFunction<WordCountDB, Long> {
-
     @Override
     public List<Long> batchRetrieve(WordCountDB state, List<TridentTuple> args) {
         List<String> words = new LinkedList<>();
@@ -24,5 +23,4 @@ public class QueryWordCountDB extends BaseQueryFunction<WordCountDB, Long> {
     public void execute(TridentTuple tuple, Long result, TridentCollector collector) {
         collector.emit(new Values(result));
     }
-
 }
