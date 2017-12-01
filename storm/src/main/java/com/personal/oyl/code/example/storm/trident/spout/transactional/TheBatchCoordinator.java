@@ -2,37 +2,29 @@ package com.personal.oyl.code.example.storm.trident.spout.transactional;
 
 import org.apache.storm.trident.spout.ITridentSpout;
 
-public class TheBatchCoordinator implements ITridentSpout.BatchCoordinator<TheMetadata> {
+public class TheBatchCoordinator implements ITridentSpout.BatchCoordinator<Integer> {
 
     @Override
-    public TheMetadata initializeTransaction(long txid, TheMetadata prevMetadata, TheMetadata currMetadata) {
+    public Integer initializeTransaction(long txid, Integer prevMetadata, Integer currMetadata) {
         System.out.println("Init transaction: " + txid);
         
-        if (null != prevMetadata)
-            System.out.println("Prev Metadata" + prevMetadata.getIndex());
-        if (null != currMetadata)
-            System.out.println("Curr Metadata" + currMetadata.getIndex());
-        
-        if (txid <= 3) {
-            TheMetadata rlt = new TheMetadata();
-            rlt.setIndex(Long.valueOf(txid).intValue() -1);
-            return rlt;
+        if (txid == 1l) {
+            return 0;
         }
-        return null;
+        
+        return prevMetadata + 1;
     }
 
     @Override
     public void success(long txid) {
-        // TODO Auto-generated method stub
         
     }
 
     @Override
     public boolean isReady(long txid) {
-        if (txid <= 3) {
+        if (txid <= TransactionalSpout.list.size()) {
             return true;
         }
-        
         return false;
     }
 

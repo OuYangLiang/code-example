@@ -36,16 +36,16 @@ public class App5 {
         cluster.submitTopology("drpc-demo", conf, topology.build());
         
         Utils.sleep(15000);
+        System.out.println("DRPC RESULT: " + drpc.execute("word", "how"));
+        System.out.println("DRPC RESULT: " + drpc.execute("word", "are"));
         System.out.println("DRPC RESULT: " + drpc.execute("word", "you"));
-        System.out.println("DRPC RESULT: " + drpc.execute("word", "you"));
-        System.out.println("DRPC RESULT: " + drpc.execute("word", "you"));
-        System.out.println("DRPC RESULT: " + drpc.execute("word", "you"));
-        System.out.println("DRPC RESULT: " + drpc.execute("word", "you"));
-        System.out.println("DRPC RESULT: " + drpc.execute("word", "you"));
-        System.out.println("DRPC RESULT: " + drpc.execute("word", "you"));
-        System.out.println("DRPC RESULT: " + drpc.execute("word", "you"));
-        System.out.println("DRPC RESULT: " + drpc.execute("word", "you"));
-        System.out.println("DRPC RESULT: " + drpc.execute("word", "you"));
+        System.out.println("DRPC RESULT: " + drpc.execute("word", "nice"));
+        System.out.println("DRPC RESULT: " + drpc.execute("word", "to"));
+        System.out.println("DRPC RESULT: " + drpc.execute("word", "meet"));
+        System.out.println("DRPC RESULT: " + drpc.execute("word", "what"));
+        System.out.println("DRPC RESULT: " + drpc.execute("word", "a"));
+        System.out.println("DRPC RESULT: " + drpc.execute("word", "good"));
+        System.out.println("DRPC RESULT: " + drpc.execute("word", "day"));
         
         cluster.shutdown();
         drpc.shutdown();
