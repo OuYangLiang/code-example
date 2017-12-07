@@ -9,6 +9,9 @@ import org.apache.storm.trident.state.StateFactory;
 public class WordCountDBFactory {
     
     public static StateFactory non_transactional = new StateFactory() {
+        private static final long serialVersionUID = 237131402501540468L;
+
+        @SuppressWarnings("rawtypes")
         @Override
         public State makeState(Map conf, IMetricsContext metrics, int partitionIndex, int numPartitions) {
             return new WordCountDB();
@@ -16,6 +19,9 @@ public class WordCountDBFactory {
     };
     
     public static StateFactory transactional = new StateFactory() {
+        private static final long serialVersionUID = 7116772395169187599L;
+
+        @SuppressWarnings("rawtypes")
         @Override
         public State makeState(Map conf, IMetricsContext metrics, int partitionIndex, int numPartitions) {
             return new TransactionalWordCountDB();
@@ -23,6 +29,9 @@ public class WordCountDBFactory {
     };
     
     public static StateFactory opaque_transactional = new StateFactory() {
+        private static final long serialVersionUID = -2558851183775705498L;
+
+        @SuppressWarnings("rawtypes")
         @Override
         public State makeState(Map conf, IMetricsContext metrics, int partitionIndex, int numPartitions) {
             return new OpaqueWordCountDB();
