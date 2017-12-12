@@ -28,7 +28,7 @@ public class DBSpout extends BaseRichSpout {
     public void nextTuple() {
         
         try {
-            List<Record> records = DBQuery.query(lastId);
+            List<Record> records = DBQuery.INSTANCE.query(lastId);
             if (null != records) {
                 for (Record record : records) {
                     collector.emit(new Values(record.getId(), record.getDesc()));

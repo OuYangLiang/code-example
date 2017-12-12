@@ -7,12 +7,14 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DBQuery {
-    public static List<Record> query(long lastId) throws SQLException {
+public enum DBQuery {
+    INSTANCE;
+    
+    public List<Record> query(long lastId) throws SQLException {
         List<Record> list = new ArrayList<>(10);
         Connection conn = null;
         try {
-            conn = ConnectionManager.getConn();
+            conn = ConnectionManager.INSTANCE.getConn();
             
             PreparedStatement ps = conn.prepareStatement("SELECT CATEGORY_OID, CATEGORY_DESC FROM CATEGORY WHERE CATEGORY_OID > ? ORDER BY CATEGORY_OID LIMIT 10");
             ps.setLong(1, lastId);
