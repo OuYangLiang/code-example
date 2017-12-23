@@ -1,0 +1,20 @@
+<configuration>
+
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%date{HH:mm:ss.SSS} %-4relative [%thread] %-5level
+        %logger - %msg%n</pattern>
+    </encoder>
+  </appender>
+  
+  <appender name="KAFKA" class="com.personal.oyl.test.logtokafka.KafkaAppender">
+    <bootstrapServer>localhost:9092</bootstrapServer>
+    <topic>test_topic</topic>
+    <clientId>log-kafka-appender</clientId>
+  </appender>
+
+  <root level="INFO">
+    <appender-ref ref="KAFKA" />
+  </root>
+
+</configuration>
