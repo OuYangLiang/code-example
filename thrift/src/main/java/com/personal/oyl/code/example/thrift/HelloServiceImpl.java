@@ -9,9 +9,4 @@ public class HelloServiceImpl implements HelloService.Iface{
         return num1 + num2;
     }
 
-    @Override
-    public String hello(String name) throws TException {
-        return "Hello " + name;
-    }
-
 }
