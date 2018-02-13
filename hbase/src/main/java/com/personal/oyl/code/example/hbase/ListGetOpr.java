@@ -1,13 +1,19 @@
 package com.personal.oyl.code.example.hbase;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.Cell;
+import org.apache.hadoop.hbase.CellUtil;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.Connection;
 import org.apache.hadoop.hbase.client.ConnectionFactory;
+import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.Put;
+import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.util.Bytes;
 
@@ -15,7 +21,7 @@ import org.apache.hadoop.hbase.util.Bytes;
  * Hello world!
  *
  */
-public class CheckAndPutOpr 
+public class ListGetOpr 
 {
     public static void main( String[] args ) throws IOException
     {
@@ -31,23 +37,30 @@ public class CheckAndPutOpr
             put.addColumn(Bytes.toBytes("colfam1"), Bytes.toBytes("q1"), Bytes.toBytes("val-1"));
             table.put(put);
             
-            Put put2 = new Put(Bytes.toBytes("row-1"));
-            put2.addColumn(Bytes.toBytes("colfam1"), Bytes.toBytes("q1"), Bytes.toBytes("val-2"));
-            boolean rlt = table.checkAndPut(Bytes.toBytes("row-1"), Bytes.toBytes("colfam1"), Bytes.toBytes("q1"), Bytes.toBytes("val-1"), put2);
+            put = new Put(Bytes.toBytes("row-2"));
+            put.addColumn(Bytes.toBytes("colfam1"), Bytes.toBytes("q1"), Bytes.toBytes("val-2"));
+            table.put(put);
             
-            assert rlt;
             
-            Put put3 = new Put(Bytes.toBytes("row-1"));
-            put3.addColumn(Bytes.toBytes("colfam1"), Bytes.toBytes("q1"), Bytes.toBytes("val-3"));
-            rlt = table.checkAndPut(Bytes.toBytes("row-1"), Bytes.toBytes("colfam1"), Bytes.toBytes("q1"), Bytes.toBytes("val-1"), put3);
+            List<Get> list = new ArrayList<>(2);
+            Get get = new Get(Bytes.toBytes("row-1"));
+            get.addFamily(Bytes.toBytes("colfam1"));
+            list.add(get);
             
-            assert !rlt;
+            get = new Get(Bytes.toBytes("row-2"));
+            get.addFamily(Bytes.toBytes("colfam1"));
+            list.add(get);
             
-            Put put4 = new Put(Bytes.toBytes("row-1"));
-            put4.addColumn(Bytes.toBytes("colfam1"), Bytes.toBytes("q2"), Bytes.toBytes("val-1"));
-            rlt = table.checkAndPut(Bytes.toBytes("row-1"), Bytes.toBytes("colfam1"), Bytes.toBytes("q2"), null, put4);
+            Result[] results = table.get(list);
             
-            assert rlt;
+            for (Result result : results) {
+                byte[] v = result.getValue(Bytes.toBytes("colfam1"), Bytes.toBytes("q1"));
+                Cell cell = result.getColumnLatestCell(Bytes.toBytes("colfam1"), Bytes.toBytes("q1"));
+                
+                System.out.println(Bytes.toString(v));
+                System.out.println(Bytes.toString(CellUtil.cloneValue(cell)));
+                System.out.println(cell);
+            }
             
         } finally {
             if (null != table) {

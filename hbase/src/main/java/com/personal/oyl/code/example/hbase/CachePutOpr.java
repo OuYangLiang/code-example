@@ -16,24 +16,32 @@ public class CachePutOpr
 {
     public static void main( String[] args ) throws IOException
     {
-        Configuration conf = HBaseConfiguration.create();
-        HTable table = new HTable(conf, "testtable");
-        table.setAutoFlushTo(false);
-        System.out.println(table.getWriteBufferSize());
+        HTable table = null;
         
-        Put put1 = new Put(Bytes.toBytes("row-2"));
-        put1.addColumn(Bytes.toBytes("colfam1"), Bytes.toBytes("q1"), Bytes.toBytes("val-1"));
-        table.put(put1);
-        
-        Put put2 = new Put(Bytes.toBytes("row-3"));
-        put2.addColumn(Bytes.toBytes("colfam1"), Bytes.toBytes("q1"), Bytes.toBytes("val-1"));
-        table.put(put2);
-        
-        Put put3 = new Put(Bytes.toBytes("row-4"));
-        put3.addColumn(Bytes.toBytes("colfam1"), Bytes.toBytes("q1"), Bytes.toBytes("val-1"));
-        table.put(put3);
-        
-        table.flushCommits();
-        table.close();
+        try {
+            Configuration conf = HBaseConfiguration.create();
+            table = new HTable(conf, "testtable");
+            table.setAutoFlushTo(false);
+            System.out.println(table.getWriteBufferSize());
+            
+            Put put1 = new Put(Bytes.toBytes("row-2"));
+            put1.addColumn(Bytes.toBytes("colfam1"), Bytes.toBytes("q1"), Bytes.toBytes("val-1"));
+            table.put(put1);
+            
+            Put put2 = new Put(Bytes.toBytes("row-3"));
+            put2.addColumn(Bytes.toBytes("colfam1"), Bytes.toBytes("q1"), Bytes.toBytes("val-1"));
+            table.put(put2);
+            
+            Put put3 = new Put(Bytes.toBytes("row-4"));
+            put3.addColumn(Bytes.toBytes("colfam1"), Bytes.toBytes("q1"), Bytes.toBytes("val-1"));
+            table.put(put3);
+            
+            table.flushCommits();
+            
+        } finally {
+            if (null != table) {
+                table.close();
+            }
+        }
     }
 }

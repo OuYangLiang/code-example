@@ -3,22 +3,28 @@ package com.personal.oyl.code.example.hbase;
 import java.io.IOException;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.Cell;
+import org.apache.hadoop.hbase.CellUtil;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.Connection;
 import org.apache.hadoop.hbase.client.ConnectionFactory;
+import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.Put;
+import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.Table;
 import org.apache.hadoop.hbase.util.Bytes;
 
 /**
- * PutOpr
+ * Hello world!
  *
  */
-public class PutOpr 
+public class GetOpr 
 {
     public static void main( String[] args ) throws IOException
     {
+        PutOpr.main(args);
+        
         Connection conn = null;
         Table table = null;
         
@@ -27,10 +33,16 @@ public class PutOpr
             conn = ConnectionFactory.createConnection(conf);
             table = conn.getTable(TableName.valueOf("testtable"));
             
-            Put put = new Put(Bytes.toBytes("row-1"));
-            put.addColumn(Bytes.toBytes("colfam1"), Bytes.toBytes("q4"), Bytes.toBytes("val-4"));
+            Get get = new Get(Bytes.toBytes("row-1"));
+            get.addFamily(Bytes.toBytes("colfam1"));
             
-            table.put(put);
+            Result result = table.get(get);
+            byte[] v = result.getValue(Bytes.toBytes("colfam1"), Bytes.toBytes("q4"));
+            Cell cell = result.getColumnLatestCell(Bytes.toBytes("colfam1"), Bytes.toBytes("q4"));
+            
+            System.out.println(Bytes.toString(v));
+            System.out.println(Bytes.toString(CellUtil.cloneValue(cell)));
+            System.out.println(cell);
             
         } finally {
             if (null != table) {
