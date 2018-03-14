@@ -1,4 +1,4 @@
-package com.personal.oyl.code.example.hadoop.reduce.later;
+package com.personal.oyl.code.example.hadoop.reduce;
 
 import java.io.IOException;
 import java.util.Iterator;

@@ -9,17 +9,17 @@ import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
-import com.personal.oyl.code.example.hadoop.mapper.later.WordCountMapper;
-import com.personal.oyl.code.example.hadoop.reduce.later.WordCountReducer;
+import com.personal.oyl.code.example.hadoop.mapper.WordCountMapper;
+import com.personal.oyl.code.example.hadoop.reduce.WordCountReducer;
 
-public class App2 {
+public class WordCount {
     public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
         Job job = new Job();
-        job.setJarByClass(App.class);
+        job.setJarByClass(WordCount.class);
         job.setJobName("word count");
         
-        FileInputFormat.addInputPath(job, new Path("/Users/ouyang/test"));
-        FileOutputFormat.setOutputPath(job, new Path("/Users/ouyang/test/out"));
+        FileInputFormat.addInputPath(job, new Path(args[0]));
+        FileOutputFormat.setOutputPath(job, new Path(args[1]));
         
         job.setMapperClass(WordCountMapper.class);
         job.setReducerClass(WordCountReducer.class);

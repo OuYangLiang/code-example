@@ -1,4 +1,4 @@
-package com.personal.oyl.code.example.hadoop.mapper.later;
+package com.personal.oyl.code.example.hadoop.mapper;
 
 import java.io.IOException;
 
