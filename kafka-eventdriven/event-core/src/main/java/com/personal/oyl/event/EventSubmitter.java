@@ -13,17 +13,18 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
-@Component
 public class EventSubmitter implements Runnable {
     
-    @Autowired
-    private EventMapper mapper;
+    private int tbNum;
+    
+    public EventSubmitter(int tbNum) {
+        this.tbNum = tbNum;
+    }
     
     @Override
     public void run() {
+        EventMapper mapper = AppContext.getContext().getBean(EventMapper.class);
         
         Properties props = new Properties();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
@@ -39,7 +40,7 @@ public class EventSubmitter implements Runnable {
             while (true) {
                 Map<String, Object> param = new HashMap<>();
                 param.put("limit", Integer.valueOf(100));
-                param.put("tbNum", 0);
+                param.put("tbNum", tbNum);
                 
                 List<Event> list = mapper.queryTopN(param);
                 
@@ -72,7 +73,7 @@ public class EventSubmitter implements Runnable {
                 if (!failed) {
                     Map<String, Object> param2 = new HashMap<>();
                     param2.put("list", eventIds);
-                    param2.put("tbNum", 0);
+                    param2.put("tbNum", tbNum);
                     mapper.batchClean(param2);
                 }
                 

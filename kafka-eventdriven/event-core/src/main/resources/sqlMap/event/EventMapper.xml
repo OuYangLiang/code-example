@@ -6,7 +6,7 @@
         <result column="event_type" property="eventType" jdbcType="NVARCHAR" />
         <result column="event_time" property="eventTime" jdbcType="TIMESTAMP" />
         <result column="context" property="context" jdbcType="NVARCHAR" />
-        <result column="group" property="INTEGER" jdbcType="NVARCHAR" />
+        <result column="group" property="group" jdbcType="INTEGER" />
 	</resultMap>
 
 
@@ -35,7 +35,7 @@
         limit #{limit}
     </select>
     
-    <delete id="batchClean" parameterType="java.util.List">
+    <delete id="batchClean" parameterType="java.util.Map">
         delete from event_queue_${tbNum}
         where id in
         <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
