@@ -2,7 +2,12 @@ package com.personal.oyl.event;
 
 import java.util.Date;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 public class Event {
+    private static final Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create();
+    
     private Long id;
     private String eventType;
     private Date eventTime;
@@ -60,5 +65,14 @@ public class Event {
     public void setGroup(String group) {
         this.group = group;
     }
-
+    
+    public String json() {
+        String rlt = gson.toJson(this);
+        return rlt;
+    }
+    
+    public static Event fromJson(String json) {
+        return gson.fromJson(json, Event.class);
+    }
+    
 }

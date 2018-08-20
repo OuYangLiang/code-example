@@ -5,59 +5,73 @@ import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class EventSubmitter implements Runnable {
     
     @Autowired
     private EventMapper mapper;
-
+    
     @Override
     public void run() {
         
         Properties props = new Properties();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
         props.put(ProducerConfig.ACKS_CONFIG, "all");
-        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.IntegerSerializer");
+        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
-        KafkaProducer<Integer, String> producer = new KafkaProducer<>(props);
+        KafkaProducer<String, String> producer = new KafkaProducer<>(props);
+        
         try {
             List<Long> eventIds = new LinkedList<>();
             List<Future<RecordMetadata>> futures = new LinkedList<>();
             
             while (true) {
                 List<Event> list = mapper.queryTopN(100);
-                if (null != list && !list.isEmpty()) {
-                    for (Event event : list) {
-                        ProducerRecord<Integer, String> record = new ProducerRecord<>("topic", 0, event.getEventTime().getTime(), 0, "value", null);
-                        futures.add(producer.send(record));
+                
+                if (null == list || list.isEmpty()) {
+                    try {
+                        TimeUnit.SECONDS.sleep(1);
+                    } catch (InterruptedException e) {
                     }
-                    
-                    boolean failed = false;
-                    for(Future<RecordMetadata> future : futures) {
-                        try {
-                            future.get();
-                        } catch (InterruptedException | ExecutionException e) {
-                            e.printStackTrace();
-                            failed = true;
-                            break;
-                        }
-                    }
-                    
-                    if (!failed) {
-                        mapper.batchClean(eventIds);
+                    continue;
+                }
+                
+                for (Event event : list) {
+                    ProducerRecord<String, String> record = new ProducerRecord<>("event-topic", 0,
+                            event.getEventTime().getTime(), null, event.json(), null);
+                    futures.add(producer.send(record));
+                    eventIds.add(event.getId());
+                }
+                
+                boolean failed = false;
+                for(Future<RecordMetadata> future : futures) {
+                    try {
+                        future.get();
+                    } catch (InterruptedException | ExecutionException e) {
+                        e.printStackTrace();
+                        failed = true;
+                        break;
                     }
                 }
+                
+                if (!failed) {
+                    mapper.batchClean(eventIds);
+                }
+                
             }
         } finally {
             producer.close();
         }
         
     }
-
+    
 }

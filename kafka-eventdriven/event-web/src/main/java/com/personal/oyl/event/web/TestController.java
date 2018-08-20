@@ -22,7 +22,7 @@ public class TestController {
     @ResponseBody
     public Object hello(@PathVariable String param) {
         
-        Event event = new Event("Event Type", new Date(), "this is the context.", "group");
+        Event event = new Event("Event Type", new Date(), param, "group");
         
         publisher.publish(event);
         

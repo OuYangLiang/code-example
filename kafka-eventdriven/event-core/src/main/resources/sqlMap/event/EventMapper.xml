@@ -35,11 +35,11 @@
         limit #{n}
     </select>
     
-    <delete id="batchClean" parameterType="int" >
+    <delete id="batchClean" parameterType="java.util.List">
         delete from event_queue
         where id in
-        <foreach item="item" index="index" collection="eventIds" open="(" separator="," close=")">
-              #{item}
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
         </foreach>
     </delete>
     
