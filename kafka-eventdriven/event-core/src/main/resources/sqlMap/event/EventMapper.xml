@@ -6,7 +6,7 @@
         <result column="event_type" property="eventType" jdbcType="NVARCHAR" />
         <result column="event_time" property="eventTime" jdbcType="TIMESTAMP" />
         <result column="context" property="context" jdbcType="NVARCHAR" />
-        <result column="group" property="group" jdbcType="NVARCHAR" />
+        <result column="group" property="INTEGER" jdbcType="NVARCHAR" />
 	</resultMap>
 
 
@@ -15,7 +15,7 @@
 	</sql>
   
     <insert id="insert" parameterType="com.personal.oyl.event.Event" useGeneratedKeys="true" keyProperty="id">
-        insert into event_queue(
+        insert into event_queue_${tbNum}(
             event_type,
             event_time,
             context,
@@ -24,19 +24,19 @@
             #{eventType,jdbcType=NVARCHAR},
             #{eventTime,jdbcType=TIMESTAMP},
             #{context,jdbcType=NVARCHAR},
-            #{group,jdbcType=NVARCHAR}
+            #{group,jdbcType=INTEGER}
         )
     </insert>
 
-    <select id="queryTopN" resultMap="BaseResultMap" parameterType="int">
+    <select id="queryTopN" resultMap="BaseResultMap" parameterType="java.util.Map">
         select <include refid="Base_Column_List" />
-        from event_queue
+        from event_queue_${tbNum}
         order by id
-        limit #{n}
+        limit #{limit}
     </select>
     
     <delete id="batchClean" parameterType="java.util.List">
-        delete from event_queue
+        delete from event_queue_${tbNum}
         where id in
         <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
             #{item}

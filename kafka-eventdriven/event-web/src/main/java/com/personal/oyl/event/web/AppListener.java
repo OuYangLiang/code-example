@@ -30,7 +30,7 @@ public class AppListener implements ApplicationListener<ContextRefreshedEvent> {
             Thread submitterThread = new Thread(submitter);
             Thread consumerThread  = new Thread(consumer);
             
-            submitterThread.start();
+            /*submitterThread.start();
             consumerThread.start();
             
             Runtime.getRuntime().addShutdownHook( new Thread(() -> {
@@ -41,7 +41,7 @@ public class AppListener implements ApplicationListener<ContextRefreshedEvent> {
                 consumer.wake();
                 
                 System.out.println("shut down...");
-            }));
+            }));*/
         }
     }
 

@@ -12,13 +12,13 @@ public class Event {
     private String eventType;
     private Date eventTime;
     private String context;
-    private String group;
+    private int group;
 
     public Event() {
         super();
     }
 
-    public Event(String eventType, Date eventTime, String context, String group) {
+    public Event(String eventType, Date eventTime, String context, int group) {
         super();
         this.eventType = eventType;
         this.eventTime = eventTime;
@@ -58,12 +58,16 @@ public class Event {
         this.context = context;
     }
 
-    public String getGroup() {
+    public int getGroup() {
         return group;
     }
 
-    public void setGroup(String group) {
+    public void setGroup(int group) {
         this.group = group;
+    }
+    
+    public int getTbNum() {
+        return this.getGroup() % 8;
     }
     
     public String json() {

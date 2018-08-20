@@ -1,7 +1,9 @@
 package com.personal.oyl.event;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -35,7 +37,11 @@ public class EventSubmitter implements Runnable {
             List<Future<RecordMetadata>> futures = new LinkedList<>();
             
             while (true) {
-                List<Event> list = mapper.queryTopN(100);
+                Map<String, Object> param = new HashMap<>();
+                param.put("limit", Integer.valueOf(100));
+                param.put("tbNum", 0);
+                
+                List<Event> list = mapper.queryTopN(param);
                 
                 if (null == list || list.isEmpty()) {
                     try {
@@ -64,7 +70,10 @@ public class EventSubmitter implements Runnable {
                 }
                 
                 if (!failed) {
-                    mapper.batchClean(eventIds);
+                    Map<String, Object> param2 = new HashMap<>();
+                    param2.put("list", eventIds);
+                    param2.put("tbNum", 0);
+                    mapper.batchClean(param2);
                 }
                 
             }

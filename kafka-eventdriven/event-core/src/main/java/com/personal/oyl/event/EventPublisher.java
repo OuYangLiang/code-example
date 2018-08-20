@@ -15,7 +15,7 @@ public class EventPublisher {
         this.mapper.insert(event);
     }
     
-    public void publish(String eventType, Date eventTime, String context, String group) {
+    public void publish(String eventType, Date eventTime, String context, int group) {
         this.mapper.insert(new Event(eventType, eventTime, context, group));
     }
 }

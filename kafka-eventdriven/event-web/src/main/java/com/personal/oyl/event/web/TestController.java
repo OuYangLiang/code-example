@@ -22,9 +22,11 @@ public class TestController {
     @ResponseBody
     public Object hello(@PathVariable String param) {
         
-        Event event = new Event("Event Type", new Date(), param, "group");
-        
-        publisher.publish(event);
+        for (int i = 0; i <= 1000; i++) {
+            Event event = new Event("Event Type", new Date(), param + "_" + i, i);
+            
+            publisher.publish(event);
+        }
         
         return "Hello " + param;
     }
