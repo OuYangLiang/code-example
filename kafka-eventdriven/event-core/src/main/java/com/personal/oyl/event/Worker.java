@@ -8,15 +8,16 @@ import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
-import org.apache.zookeeper.ZooDefs;
-import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.Watcher.Event.EventType;
 import org.apache.zookeeper.Watcher.Event.KeeperState;
-import org.apache.zookeeper.data.Stat;
+import org.apache.zookeeper.ZooDefs;
+import org.apache.zookeeper.ZooKeeper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.personal.oyl.event.util.ZkUtil;
 
 
 /**
@@ -65,17 +66,17 @@ public class Worker {
         latch.await();
         // do what it should do as a worker...
         
-        this.createWorkNode(cfg.getWorkerNode() + clientId);
+        this.createWorkNode(cfg.getWorkerNode() + Configuration.SEPARATOR + clientId);
         log.info("Id: " + clientId + " work node created...");
         
-        String source = this.getContent(cfg.getWorkerNode() + clientId, workWatcher);
+        String source = ZkUtil.getInstance().getContent(zk, cfg.getWorkerNode() + Configuration.SEPARATOR + clientId, workWatcher);
         this.handleSource(source);
     }
     
     private Watcher workWatcher = (event) -> {
         try {
             if (event.getType().equals(EventType.NodeDataChanged)) {
-                String source = this.getContent(event.getPath(), Worker.this.workWatcher);
+                String source = ZkUtil.getInstance().getContent(zk, event.getPath(), Worker.this.workWatcher);
                 this.handleSource(source);
             }
         } catch (Exception e) {
@@ -83,29 +84,17 @@ public class Worker {
         }
     };
     
-    private void handleSource(String source) throws KeeperException, InterruptedException {
+    private void handleSource(String source) {
         if (null == source || source.trim().isEmpty()) {
             return;
         }
         
-        threadUtil.stopAll();
-        String[] parts = source.split(Configuration.GROUP_SEPARATOR);
-        
-        for (String part : parts) {
-            threadUtil.startForN(Integer.valueOf(part.trim()));
-        }
-    }
-    
-    private String getContent(String znode, Watcher watcher) throws KeeperException, InterruptedException {
-        Stat stat = new Stat();
-        try{
-            byte[] source = zk.getData(znode, watcher, stat);
-            return null == source ? null : new String(source);
-        } catch(KeeperException e){
-            if (e.code().equals(KeeperException.Code.CONNECTIONLOSS)) {
-                return this.getContent(znode, watcher);
-            } else {
-                throw e;
+        synchronized (Worker.class) {
+            threadUtil.stopAll();
+            String[] parts = source.split(Configuration.GROUP_SEPARATOR);
+            
+            for (String part : parts) {
+                threadUtil.startForN(Integer.valueOf(part.trim()));
             }
         }
     }

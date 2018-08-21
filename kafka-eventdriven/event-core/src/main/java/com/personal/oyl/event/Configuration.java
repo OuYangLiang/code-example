@@ -1,5 +1,8 @@
 package com.personal.oyl.event;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.springframework.stereotype.Component;
 
 @Component
@@ -39,7 +42,7 @@ public class Configuration {
     }
 
     public String getWorkerNode() {
-        return this.getNamespace() + workerNode + SEPARATOR;
+        return this.getNamespace() + workerNode;
     }
 
     public void setWorkerNode(String workerNode) {
@@ -52,5 +55,13 @@ public class Configuration {
 
     public void setSessionTimeout(int sessionTimeout) {
         this.sessionTimeout = sessionTimeout;
+    }
+    
+    public Set<Integer> getTables() {
+        Set<Integer> rlt = new HashSet<>();
+        for (int i = 0; i <= 7; i++) {
+            rlt.add(Integer.valueOf(i));
+        }
+        return rlt;
     }
 }

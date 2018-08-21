@@ -13,8 +13,12 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class EventSubmitter implements Runnable {
+    
+    private static final Logger log = LoggerFactory.getLogger(EventSubmitter.class);
     
     private int tbNum;
     
@@ -37,7 +41,7 @@ public class EventSubmitter implements Runnable {
             List<Long> eventIds = new LinkedList<>();
             List<Future<RecordMetadata>> futures = new LinkedList<>();
             
-            while (true) {
+            while (!Thread.currentThread().isInterrupted()) {
                 Map<String, Object> param = new HashMap<>();
                 param.put("limit", Integer.valueOf(100));
                 param.put("tbNum", tbNum);
@@ -63,10 +67,11 @@ public class EventSubmitter implements Runnable {
                 for(Future<RecordMetadata> future : futures) {
                     try {
                         future.get();
-                    } catch (InterruptedException | ExecutionException e) {
-                        e.printStackTrace();
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    } catch (ExecutionException e) {
+                        log.error(e.getMessage(), e);
                         failed = true;
-                        break;
                     }
                 }
                 

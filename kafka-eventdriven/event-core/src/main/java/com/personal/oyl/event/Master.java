@@ -1,7 +1,11 @@
 package com.personal.oyl.event;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 
@@ -11,15 +15,20 @@ import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.Watcher.Event.EventType;
 import org.apache.zookeeper.Watcher.Event.KeeperState;
 import org.apache.zookeeper.ZooKeeper;
-import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+import com.personal.oyl.event.util.ZkUtil;
+
+@Component
 public class Master {
     
     private static final Logger log = LoggerFactory.getLogger(Master.class);
     
     private ZooKeeper zk;
+    @Autowired
     private Configuration cfg;
     private SimpleLock lock;
     
@@ -63,8 +72,14 @@ public class Master {
         
         lock = new SimpleLock(zk);
         lock.lock(uuid, cfg.getMasterNode());
-        log.info("Now it is the master server...");
+        log.error("Now it is the master server...");
         // do what it should do as a master...
+        
+        ZkUtil.getInstance().getChildren(zk, cfg.getWorkerNode(), masterWatcher);
+        log.error("ready for listening to workers...");
+        
+        log.error("perform the first check of the assignment, invoke method onWorkerChange()...");
+        this.onWorkerChange();
     }
     
     private void close() {
@@ -78,44 +93,86 @@ public class Master {
         }
     }
     
-    private List<String> getChild(String znode, Watcher watcher) throws KeeperException, InterruptedException {
-        try{
-            if (null == watcher) {
-                return zk.getChildren(cfg.getNamespace() + znode, false);
-            } else {
-                return zk.getChildren(cfg.getNamespace() + znode, watcher);
-            }
-        } catch(KeeperException e){
-            if (e.code().equals(KeeperException.Code.CONNECTIONLOSS)) {
-                if (null == watcher) {
-                    return zk.getChildren(cfg.getNamespace() + znode, false);
-                } else {
-                    return zk.getChildren(cfg.getNamespace() + znode, watcher);
-                }
-            } else {
-                throw e;
-            }
-        }
-    }
-    
-    private String getContent(String znode, Watcher watcher) throws KeeperException, InterruptedException {
-        Stat stat = new Stat();
-        try{
-            byte[] source = zk.getData(znode, watcher, stat);
-            return null == source ? null : new String(source);
-        } catch(KeeperException e){
-            if (e.code().equals(KeeperException.Code.CONNECTIONLOSS)) {
-                return this.getContent(znode, watcher);
-            } else {
-                throw e;
-            }
-        }
-    }
-    
-    private void onWorkerChange() throws KeeperException, InterruptedException {
-        List<String> workerList = this.getChild(cfg.getWorkerNode(), masterWatcher);
+    private synchronized void onWorkerChange() throws KeeperException, InterruptedException {
+        List<String> workerList = ZkUtil.getInstance().getChildren(zk, cfg.getWorkerNode(), masterWatcher);
+        List<Holder> holders = new LinkedList<>();
+        Set<Integer> assigned = new HashSet<>();
         for (String worker : workerList) {
+            Holder holder = new Holder();
+            String content = ZkUtil.getInstance().getContent(zk, cfg.getWorkerNode() + Configuration.SEPARATOR + worker, null);
+            holder.setNode(worker);
+            holder.setAssigned(content);
+            holders.add(holder);
+            assigned.addAll(holder.getAssigned());
+        }
+        
+        cfg.getTables().forEach((t) -> {
+            if (!assigned.contains(t)) {
+                Collections.sort(holders, (o1, o2) -> o1.assigned.size() - o2.assigned.size());
+                holders.get(0).addAssigned(t);
+            }
+        });
+        
+        for (Holder holder : holders) {
+            if (holder.affected) {
+                try{
+                    ZkUtil.getInstance().setContent(zk, cfg.getWorkerNode() + Configuration.SEPARATOR + holder.getNode(), holder.assignedString());
+                } catch(KeeperException e){
+                    if (e instanceof KeeperException.NoNodeException) {
+                        // 可能发生NONODE异常，这不是问题。
+                        // NONODE意味着某个Worker下线了，Master会收到通知，并重新进行分配。
+                        return;
+                    }
+                    throw e;
+                }
+            }
+        }
+    }
+    
+    private static class Holder {
+        private String node;
+        private List<Integer> assigned = new LinkedList<>();
+        private boolean affected = false;
+
+        public String getNode() {
+            return node;
+        }
+
+        public void setNode(String node) {
+            this.node = node;
+        }
+
+        public List<Integer> getAssigned() {
+            return assigned;
+        }
+
+        public void addAssigned(Integer i) {
+            this.getAssigned().add(i);
+            affected = true;
+        }
+
+        public void setAssigned(String nodeContent) {
+            if (null == nodeContent || nodeContent.trim().isEmpty()) {
+                return;
+            }
             
+            String[] parts = nodeContent.trim().split(Configuration.GROUP_SEPARATOR);
+            for (String part : parts) {
+                assigned.add(Integer.valueOf(part.trim()));
+            }
+        }
+        
+        public String assignedString() {
+            StringBuilder sb = new StringBuilder();
+            int size = assigned.size();
+            
+            for (int i = 0; i < size; i++) {
+                sb.append(this.getAssigned().get(i));
+                if (i < (size - 1)) {
+                    sb.append(Configuration.GROUP_SEPARATOR);
+                }
+            }
+            return sb.toString();
         }
     }
 }
