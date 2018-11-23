@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.personal.test.demo.mod1.dao.Test1Dao">
+    <select id="queryByKey" resultType="java.lang.String">
+        select val
+        from test_table
+        where id = #{param1}
+    </select>
+</mapper>
