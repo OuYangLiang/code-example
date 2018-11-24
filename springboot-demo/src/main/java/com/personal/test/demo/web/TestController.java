@@ -31,4 +31,11 @@ public class TestController {
     public String db2(@PathVariable("id") int id) {
         return dao2.queryByKey(id);
     }
+    
+    @RequestMapping("/exception")
+    public String exception() {
+        int a = 1 / 0;
+        
+        return Integer.toString(a);
+    }
 }
