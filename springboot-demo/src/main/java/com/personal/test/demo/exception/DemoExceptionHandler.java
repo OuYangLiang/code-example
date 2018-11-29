@@ -7,15 +7,15 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @ControllerAdvice
-public class DemoExceptionHandler {
-    
-    private static final Logger log = LoggerFactory.getLogger(DemoExceptionHandler.class);
+public final class DemoExceptionHandler {
 
-    
+    private static final Logger LOG =
+            LoggerFactory.getLogger(DemoExceptionHandler.class);
+
     @ExceptionHandler(Exception.class)
     @ResponseBody
-    String handleControllerException(Exception e) {
-        log.error(e.getMessage(), e);
+    String handleControllerException(final Exception e) {
+        LOG.error(e.getMessage(), e);
         return "Error occured: " + e.getMessage();
     }
 }

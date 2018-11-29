@@ -17,7 +17,12 @@ import com.mchange.v2.c3p0.ComboPooledDataSource;
 @Configuration
 @MapperScan("com.personal.test.demo.mod1.dao")
 public class DataSourceConfig {
-    
+
+    private static final int DEFAULT_POOL_SIZE = 10;
+
+    /**
+     * 数据源1
+     */
     @Bean
     @Primary
     public DataSource dataSource() throws PropertyVetoException {
@@ -26,21 +31,26 @@ public class DataSourceConfig {
         rlt.setUser("root");
         rlt.setPassword("password");
         rlt.setJdbcUrl("jdbc:mysql://localhost:3306/test1");
-        rlt.setInitialPoolSize(10);
-        rlt.setMaxPoolSize(10);
-        rlt.setMinPoolSize(10);
+        rlt.setInitialPoolSize(DEFAULT_POOL_SIZE);
+        rlt.setMaxPoolSize(DEFAULT_POOL_SIZE);
+        rlt.setMinPoolSize(DEFAULT_POOL_SIZE);
         rlt.setTestConnectionOnCheckin(true);
         rlt.setPreferredTestQuery("select 1");
-        
+
         return rlt;
     }
-    
+
+    /**
+     * sqlSession工厂
+     */
     @Bean
     @Primary
-    public SqlSessionFactory sqlSessionFactory(DataSource dataSource) throws Exception {
+    public SqlSessionFactory sqlSessionFactory(
+            final DataSource dataSource) throws Exception {
         SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
         bean.setDataSource(dataSource);
-        bean.setMapperLocations(new PathMatchingResourcePatternResolver().getResources("classpath:sqlMap/database1/*.xml"));
+        bean.setMapperLocations(new PathMatchingResourcePatternResolver()
+                .getResources("classpath:sqlMap/database1/*.xml"));
         return bean.getObject();
     }
 }

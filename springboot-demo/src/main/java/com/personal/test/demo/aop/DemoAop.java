@@ -13,38 +13,38 @@ import org.springframework.stereotype.Component;
 
 @Aspect
 @Component
-public class DemoAop {
-    
-    private static final Logger log = LoggerFactory.getLogger(DemoAop.class);
-    
+public final class DemoAop {
+
+    private static final Logger LOG = LoggerFactory.getLogger(DemoAop.class);
+
     @Pointcut("execution(* com.personal.test.demo.*.dao.*.*(..))")
     public void dao() {
     }
-    
+
     @Pointcut("execution(* com.personal.test.demo.web.*.*(..))")
     public void controller() {
     }
 
     @Before("controller()")
-    public void beforeController(JoinPoint joinPoint) {
-        log.info("Before: " + joinPoint.getSignature().getName());
+    public void beforeController(final JoinPoint joinPoint) {
+        LOG.info("Before: " + joinPoint.getSignature().getName());
     }
-    
+
     @Before("dao()")
-    public void before(JoinPoint joinPoint) {
-        log.info("Before: " + joinPoint.getSignature().getName());
+    public void before(final JoinPoint joinPoint) {
+        LOG.info("Before: " + joinPoint.getSignature().getName());
     }
-    
-    @After("dao()")  
-    public void after(JoinPoint joinPoint){  
-        log.info("After: " + joinPoint.getSignature().getName());  
+
+    @After("dao()")
+    public void after(final JoinPoint joinPoint) {
+        LOG.info("After: " + joinPoint.getSignature().getName());
     }
-    
-    @Around("dao()")  
-    public Object around(ProceedingJoinPoint pjp) throws Throwable{  
-        log.info("Around start: " + pjp.getSignature().getName());
+
+    @Around("dao()")
+    public Object around(final ProceedingJoinPoint pjp) throws Throwable {
+        LOG.info("Around start: " + pjp.getSignature().getName());
         Object rlt = pjp.proceed();
-        log.info("Around end: " + pjp.getSignature().getName());
+        LOG.info("Around end: " + pjp.getSignature().getName());
         return rlt;
     }
 }
