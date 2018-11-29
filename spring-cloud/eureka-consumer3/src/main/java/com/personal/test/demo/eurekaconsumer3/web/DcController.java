@@ -15,6 +15,6 @@ public class DcController {
 
     @GetMapping("/consumer")
     public String dc() {
-        return dcClient.consumer();
+        return "From consumer3: " + dcClient.consumer();
     }
 }

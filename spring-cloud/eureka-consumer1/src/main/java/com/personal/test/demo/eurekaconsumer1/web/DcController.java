@@ -20,6 +20,6 @@ public class DcController {
         ServiceInstance serviceInstance = loadBalancerClient.choose("eureka-client");
         String url = "http://" + serviceInstance.getHost() + ":" + serviceInstance.getPort() + "/dc";
         System.out.println(url);
-        return restTemplate.getForObject(url, String.class);
+        return "From consumer1: " + restTemplate.getForObject(url, String.class);
     }
 }

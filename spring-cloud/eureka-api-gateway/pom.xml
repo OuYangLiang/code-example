@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.personal.test.demo</groupId>
-    <artifactId>eureka-server</artifactId>
+    <artifactId>eureka-api-gateway</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>eureka-server</name>
+    <name>eureka-api-gateway</name>
     <description>Demo project for Spring Boot</description>
 
     <parent>
@@ -39,7 +39,13 @@
 
         <dependency>
             <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
+            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+            <version>2.0.2.RELEASE</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-zuul</artifactId>
             <version>2.0.2.RELEASE</version>
         </dependency>
     </dependencies>
@@ -52,5 +58,6 @@
             </plugin>
         </plugins>
     </build>
+
 
 </project>
