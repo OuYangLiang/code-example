@@ -21,17 +21,11 @@ public class RequestWrapper extends HttpServletRequestWrapper {
         body = HttpClientUtil.getInstance().read(request.getInputStream());
     }
 
-    /**
-     * getReader
-     */
     @Override
     public BufferedReader getReader() throws IOException {
         return new BufferedReader(new InputStreamReader(getInputStream()));
     }
 
-    /**
-     * getInputStream
-     */
     @Override
     public ServletInputStream getInputStream() throws IOException {
 

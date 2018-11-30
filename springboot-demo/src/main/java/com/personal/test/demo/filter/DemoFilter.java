@@ -10,10 +10,13 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.http.client.ClientProtocolException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.personal.test.demo.filter.util.HttpClientUtil;
+import com.personal.test.demo.filter.util.RemoteResponseResult;
+import com.personal.test.demo.filter.util.RemoteResponseResult.Pair;
 import com.personal.test.demo.filter.wrapper.RequestWrapper;
 import com.personal.test.demo.filter.wrapper.ResponseWrapper;
 
@@ -49,21 +52,33 @@ public final class DemoFilter implements Filter {
 
         RequestWrapper wrapperRequest = new RequestWrapper(req);
         ResponseWrapper wrapperResponse = new ResponseWrapper(resp);
-
         chain.doFilter(wrapperRequest, wrapperResponse);
+        RemoteResponseResult remoteRlt = remoteCall(wrapperRequest, resp);
 
-        if (req.getRequestURI().startsWith("/hello")) {
-            String url = "http://192.168.6.149:9000" + req.getRequestURI();
-            log.info(url);
-            HttpClientUtil.getInstance().get(url, wrapperRequest, resp);
-            return;
+        resp.setStatus(remoteRlt.getStatusCode());
+        resp.setContentType(remoteRlt.getContentType());
+        resp.setContentLength(remoteRlt.getContentLength());
+        if (null != remoteRlt.getRespHeaders()) {
+            for (Pair p : remoteRlt.getRespHeaders()) {
+                resp.addHeader(p.getName(), p.getVal());
+            }
         }
+        resp.getOutputStream().write(remoteRlt.getBody());
 
-        if (req.getRequestURI().startsWith("/people")) {
-            String url = "http://192.168.6.149:9000" + req.getRequestURI();
-            log.info(url);
-            HttpClientUtil.getInstance().post(url, wrapperRequest, resp);
-            return;
+        log.info("Local Response: " + wrapperResponse.toString());
+        log.info("Remote response: " + new String(remoteRlt.getBody(), "utf-8"));
+    }
+
+    private RemoteResponseResult remoteCall(final HttpServletRequest req, final HttpServletResponse resp)
+            throws ClientProtocolException, IOException {
+        String method = req.getMethod();
+        String url = "http://192.168.6.149:9000" + req.getRequestURI();
+        if ("GET".equalsIgnoreCase(method)) {
+            return HttpClientUtil.getInstance().get(url, req, resp);
+        } else if ("POST".equalsIgnoreCase(method)) {
+            return HttpClientUtil.getInstance().post(url, req, resp);
+        } else {
+            throw new RuntimeException("Unsupport http method: " + method);
         }
     }
 

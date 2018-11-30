@@ -64,7 +64,7 @@ public final class HttpClientUtil {
                 .build();
     }
 
-    public void post(final String url, final HttpServletRequest req,
+    public RemoteResponseResult post(final String url, final HttpServletRequest req,
             final HttpServletResponse resp) throws ClientProtocolException, IOException {
         HttpPost post = new HttpPost(url);
         post.setConfig(REQ_CONFIG);
@@ -80,55 +80,92 @@ public final class HttpClientUtil {
 
         post.setEntity(new InputStreamEntity(req.getInputStream()));
 
-        CloseableHttpClient httpclient = this.getClient();
-        CloseableHttpResponse response = httpclient.execute(post);
-        HttpEntity entity = response.getEntity();
+        CloseableHttpClient httpclient = null;
+        CloseableHttpResponse response = null;
+        try {
+            httpclient = this.getClient();
+            response = httpclient.execute(post);
+            HttpEntity entity = response.getEntity();
 
-        resp.setStatus(response.getStatusLine().getStatusCode());
-        resp.setContentType(entity.getContentType().getValue());
-        resp.setContentLength((int) entity.getContentLength());
-        for (Header h : response.getAllHeaders()) {
-            if ("Transfer-Encoding".equalsIgnoreCase(h.getName())) {
-                continue;
+            RemoteResponseResult rlt = new RemoteResponseResult();
+            rlt.setStatusCode(response.getStatusLine().getStatusCode());
+            rlt.setContentType(entity.getContentType().getValue());
+            rlt.setContentLength((int) entity.getContentLength());
+            for (Header h : response.getAllHeaders()) {
+                if ("Transfer-Encoding".equalsIgnoreCase(h.getName())) {
+                    continue;
+                }
+                rlt.addRespHeader(h.getName(), h.getValue());
             }
-            resp.addHeader(h.getName(), h.getValue());
-        }
+            rlt.setBody(read(entity.getContent()));
+            EntityUtils.consume(entity);
 
-        resp.getOutputStream().write(read(entity.getContent()));
-        EntityUtils.consume(entity);
-        response.close();
+            return rlt;
+        } finally {
+            if (null != response) {
+                response.close();
+            }
+            if (null != httpclient) {
+                httpclient.close();
+            }
+        }
     }
 
-    public void get(final String url,
+    public RemoteResponseResult get(final String url,
             final HttpServletRequest req, final HttpServletResponse resp)
                     throws ClientProtocolException, IOException {
-        HttpGet httpGet = new HttpGet(url);
+
+        StringBuilder sb = new StringBuilder(url);
+
+        Enumeration<String> enums = req.getParameterNames();
+        if (null != enums) {
+            sb.append("?");
+            while (enums.hasMoreElements()) {
+                String k = enums.nextElement();
+                String v = req.getParameter(k);
+                sb.append(k).append("=").append(v).append("&");
+            }
+        }
+
+        HttpGet httpGet = new HttpGet(sb.toString());
         httpGet.setConfig(REQ_CONFIG);
 
-        Enumeration<String> enums = req.getHeaderNames();
+        enums = req.getHeaderNames();
         while (enums.hasMoreElements()) {
             String k = enums.nextElement();
             String v = req.getHeader(k);
             httpGet.addHeader(k, v);
         }
 
-        CloseableHttpClient httpclient = this.getClient();
-        CloseableHttpResponse response = httpclient.execute(httpGet);
-        HttpEntity entity = response.getEntity();
+        CloseableHttpClient httpclient = null;
+        CloseableHttpResponse response = null;
+        try {
+            httpclient = this.getClient();
+            response = httpclient.execute(httpGet);
+            HttpEntity entity = response.getEntity();
 
-        resp.setStatus(response.getStatusLine().getStatusCode());
-        resp.setContentType(entity.getContentType().getValue());
-        resp.setContentLength((int) entity.getContentLength());
-        for (Header h : response.getAllHeaders()) {
-            if ("Transfer-Encoding".equalsIgnoreCase(h.getName())) {
-                continue;
+            RemoteResponseResult rlt = new RemoteResponseResult();
+            rlt.setStatusCode(response.getStatusLine().getStatusCode());
+            rlt.setContentType(entity.getContentType().getValue());
+            rlt.setContentLength((int) entity.getContentLength());
+            for (Header h : response.getAllHeaders()) {
+                if ("Transfer-Encoding".equalsIgnoreCase(h.getName())) {
+                    continue;
+                }
+                rlt.addRespHeader(h.getName(), h.getValue());
             }
-            resp.addHeader(h.getName(), h.getValue());
-        }
+            rlt.setBody(read(entity.getContent()));
+            EntityUtils.consume(entity);
 
-        resp.getOutputStream().write(read(entity.getContent()));
-        EntityUtils.consume(entity);
-        response.close();
+            return rlt;
+        } finally {
+            if (null != response) {
+                response.close();
+            }
+            if (null != httpclient) {
+                httpclient.close();
+            }
+        }
     }
 
     public byte[] read(final InputStream in) throws IOException {
