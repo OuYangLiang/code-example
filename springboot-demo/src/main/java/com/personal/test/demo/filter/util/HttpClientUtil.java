@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.util.Enumeration;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -64,8 +63,8 @@ public final class HttpClientUtil {
                 .build();
     }
 
-    public RemoteResponseResult post(final String url, final HttpServletRequest req,
-            final HttpServletResponse resp) throws ClientProtocolException, IOException {
+    public RemoteResponseResult post(final String url, final HttpServletRequest req)
+            throws ClientProtocolException, IOException {
         HttpPost post = new HttpPost(url);
         post.setConfig(REQ_CONFIG);
 
@@ -111,8 +110,7 @@ public final class HttpClientUtil {
         }
     }
 
-    public RemoteResponseResult get(final String url,
-            final HttpServletRequest req, final HttpServletResponse resp)
+    public RemoteResponseResult get(final String url, final HttpServletRequest req)
                     throws ClientProtocolException, IOException {
 
         StringBuilder sb = new StringBuilder(url);

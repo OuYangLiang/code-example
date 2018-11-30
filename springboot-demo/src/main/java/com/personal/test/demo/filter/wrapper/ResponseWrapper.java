@@ -3,7 +3,6 @@ package com.personal.test.demo.filter.wrapper;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.WriteListener;
@@ -38,8 +37,8 @@ public class ResponseWrapper extends HttpServletResponseWrapper {
         return output.getWriter();
     }
 
-    public String toString() {
-        return output.toString();
+    public byte[] getContent() {
+        return output.getByte();
     }
 
     static class ByteArrayServletStream extends ServletOutputStream {
@@ -77,12 +76,9 @@ public class ResponseWrapper extends HttpServletResponseWrapper {
             return sos;
         }
 
-        public String toString() {
-            try {
-                return new String(baos.toByteArray(), "utf-8");
-            } catch (UnsupportedEncodingException e) {
-                return new String(baos.toByteArray());
-            }
+        public byte[] getByte() {
+            return baos.toByteArray();
         }
+
     }
 }

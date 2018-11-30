@@ -56,4 +56,8 @@ public class RequestWrapper extends HttpServletRequestWrapper {
         };
     }
 
+    public byte[] getBody() {
+        return body;
+    }
+
 }
