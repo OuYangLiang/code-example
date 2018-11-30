@@ -2,6 +2,7 @@ package com.personal.test.demo.web;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,9 +21,19 @@ public class TestController {
     /**
      * /hello方法
      */
-    @RequestMapping("/hello")
-    public String hello() {
+    @RequestMapping("/hello/{id}")
+    public String hello(@PathVariable int id) {
+        System.out.println("hello in controller called...");
         return "hello";
+    }
+    
+    
+    @RequestMapping("/people")
+    public People getResult(@RequestBody People p) {
+        People p1 = new People();
+        p1.setName("1234512345");
+        p1.setAge(0);
+        return p1;
     }
 
     /**
