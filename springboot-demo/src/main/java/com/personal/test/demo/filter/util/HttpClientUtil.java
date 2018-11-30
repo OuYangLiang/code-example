@@ -1,4 +1,4 @@
-package com.personal.test.demo.copy;
+package com.personal.test.demo.filter.util;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -11,19 +11,64 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.util.EntityUtils;
 
-public class Util {
-    
-    public void post(String url, HttpServletRequest req, HttpServletResponse resp) throws ClientProtocolException, IOException {
+public final class HttpClientUtil {
+
+    private static final int DEFAULT_BUFFER_SIZE = 1024;
+    private static volatile HttpClientUtil instance;
+    private HttpClientUtil() {
+
+    }
+
+    public static HttpClientUtil getInstance() {
+        if (null == instance) {
+            synchronized (HttpClientUtil.class) {
+                if (null == instance) {
+                    instance = new HttpClientUtil();
+                }
+            }
+        }
+
+        return instance;
+    }
+
+    private static final int MAC_CONCURRENT_PER_ROUTE = 20;
+    private static final int MAX_CONCURRENT = 30;
+    private static final int REQ_TIMEOUT = 2000;
+    private static final int CONN_TIMEOUT = 5000;
+    private static final int SOCKET_TIMEOUT = 10000;
+
+    private static final RequestConfig REQ_CONFIG = RequestConfig.custom()
+            .setConnectTimeout(CONN_TIMEOUT)
+            .setConnectionRequestTimeout(REQ_TIMEOUT)
+            .setSocketTimeout(SOCKET_TIMEOUT).build();
+
+
+    public CloseableHttpClient getClient() {
+        PoolingHttpClientConnectionManager connMgr =
+                new PoolingHttpClientConnectionManager();
+        connMgr.setMaxTotal(MAX_CONCURRENT);
+        connMgr.setDefaultMaxPerRoute(MAC_CONCURRENT_PER_ROUTE);
+
+        return HttpClientBuilder.create()
+                .setConnectionManager(connMgr)
+                .build();
+    }
+
+    public void post(final String url, final HttpServletRequest req,
+            final HttpServletResponse resp) throws ClientProtocolException, IOException {
         HttpPost post = new HttpPost(url);
-        
+        post.setConfig(REQ_CONFIG);
+
         Enumeration<String> enums = req.getHeaderNames();
         while (enums.hasMoreElements()) {
             String k = enums.nextElement();
@@ -32,64 +77,65 @@ public class Util {
                 post.addHeader(k, v);
             }
         }
-        
+
         post.setEntity(new InputStreamEntity(req.getInputStream()));
-        
-        CloseableHttpClient httpclient = HttpClients.createDefault();
+
+        CloseableHttpClient httpclient = this.getClient();
         CloseableHttpResponse response = httpclient.execute(post);
         HttpEntity entity = response.getEntity();
-        
+
         resp.setStatus(response.getStatusLine().getStatusCode());
         resp.setContentType(entity.getContentType().getValue());
-        resp.setContentLength((int)entity.getContentLength());
+        resp.setContentLength((int) entity.getContentLength());
         for (Header h : response.getAllHeaders()) {
             if ("Transfer-Encoding".equalsIgnoreCase(h.getName())) {
                 continue;
             }
             resp.addHeader(h.getName(), h.getValue());
         }
-        
+
         resp.getOutputStream().write(read(entity.getContent()));
         EntityUtils.consume(entity);
         response.close();
     }
-    
-    public void get(String url, HttpServletRequest req, HttpServletResponse resp) throws ClientProtocolException, IOException {
+
+    public void get(final String url,
+            final HttpServletRequest req, final HttpServletResponse resp)
+                    throws ClientProtocolException, IOException {
         HttpGet httpGet = new HttpGet(url);
-        
+        httpGet.setConfig(REQ_CONFIG);
+
         Enumeration<String> enums = req.getHeaderNames();
         while (enums.hasMoreElements()) {
             String k = enums.nextElement();
             String v = req.getHeader(k);
             httpGet.addHeader(k, v);
         }
-        
-        CloseableHttpClient httpclient = HttpClients.createDefault();
+
+        CloseableHttpClient httpclient = this.getClient();
         CloseableHttpResponse response = httpclient.execute(httpGet);
         HttpEntity entity = response.getEntity();
-        
-        
+
         resp.setStatus(response.getStatusLine().getStatusCode());
         resp.setContentType(entity.getContentType().getValue());
-        resp.setContentLength((int)entity.getContentLength());
+        resp.setContentLength((int) entity.getContentLength());
         for (Header h : response.getAllHeaders()) {
             if ("Transfer-Encoding".equalsIgnoreCase(h.getName())) {
                 continue;
             }
             resp.addHeader(h.getName(), h.getValue());
         }
-        
+
         resp.getOutputStream().write(read(entity.getContent()));
         EntityUtils.consume(entity);
         response.close();
     }
-    
-    
-    public static byte[] read(InputStream in) throws IOException {
+
+    public byte[] read(final InputStream in) throws IOException {
         ByteArrayOutputStream result = null;
         try {
             result = new ByteArrayOutputStream();
-            byte[] buffer = new byte[1024];
+            byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
             int length;
             while ((length = in.read(buffer)) != -1) {
                 result.write(buffer, 0, length);
@@ -102,5 +148,5 @@ public class Util {
         }
 
     }
-    
+
 }

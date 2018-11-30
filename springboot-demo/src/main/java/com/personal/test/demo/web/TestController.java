@@ -22,14 +22,16 @@ public class TestController {
      * /hello方法
      */
     @RequestMapping("/hello/{id}")
-    public String hello(@PathVariable int id) {
+    public String hello(@PathVariable final int id) {
         System.out.println("hello in controller called...");
         return "hello";
     }
-    
-    
+
+    /**
+     * getResult方法
+     */
     @RequestMapping("/people")
-    public People getResult(@RequestBody People p) {
+    public People getResult(@RequestBody final People p) {
         People p1 = new People();
         p1.setName("1234512345");
         p1.setAge(0);

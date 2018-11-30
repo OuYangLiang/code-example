@@ -13,16 +13,15 @@ public class ResponseWrapper extends HttpServletResponseWrapper {
     private ByteArrayPrintWriter output;
     private boolean usingWriter;
 
-    public ResponseWrapper(HttpServletResponse response) {
+    public ResponseWrapper(final HttpServletResponse response) {
         super(response);
         usingWriter = false;
         output = new ByteArrayPrintWriter();
     }
 
-    /*public byte[] getByteArray() {
-        return output.toByteArray();
-    }*/
-
+    /* (non-Javadoc)
+     * @see javax.servlet.ServletResponseWrapper#getOutputStream()
+     */
     @Override
     public ServletOutputStream getOutputStream() throws IOException {
         if (usingWriter) {
@@ -32,6 +31,9 @@ public class ResponseWrapper extends HttpServletResponseWrapper {
         return output.getStream();
     }
 
+    /* (non-Javadoc)
+     * @see javax.servlet.ServletResponseWrapper#getWriter()
+     */
     @Override
     public PrintWriter getWriter() throws IOException {
         if (usingWriter) {
@@ -41,18 +43,21 @@ public class ResponseWrapper extends HttpServletResponseWrapper {
         return output.getWriter();
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
     public String toString() {
         return output.toString();
     }
 
     static class ByteArrayServletStream extends ServletOutputStream {
-        ByteArrayOutputStream baos;
+        private ByteArrayOutputStream baos;
 
-        ByteArrayServletStream(ByteArrayOutputStream baos) {
+        ByteArrayServletStream(final ByteArrayOutputStream baos) {
             this.baos = baos;
         }
 
-        public void write(int param) throws IOException {
+        public void write(final int param) throws IOException {
             baos.write(param);
         }
 
@@ -62,7 +67,7 @@ public class ResponseWrapper extends HttpServletResponseWrapper {
         }
 
         @Override
-        public void setWriteListener(WriteListener listener) {
+        public void setWriteListener(final WriteListener listener) {
 
         }
     }
@@ -80,8 +85,5 @@ public class ResponseWrapper extends HttpServletResponseWrapper {
             return sos;
         }
 
-        /*byte[] toByteArray() {
-            return baos.toByteArray();
-        }*/
     }
 }

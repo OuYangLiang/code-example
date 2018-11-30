@@ -10,22 +10,28 @@ import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
-import com.personal.test.demo.copy.Util;
+import com.personal.test.demo.filter.util.HttpClientUtil;
 
 public class RequestWrapper extends HttpServletRequestWrapper {
 
     private byte[] body;
 
-    public RequestWrapper(HttpServletRequest request) throws IOException {
+    public RequestWrapper(final HttpServletRequest request) throws IOException {
         super(request);
-        body = Util.read(request.getInputStream());
+        body = HttpClientUtil.getInstance().read(request.getInputStream());
     }
 
+    /**
+     * getReader
+     */
     @Override
     public BufferedReader getReader() throws IOException {
         return new BufferedReader(new InputStreamReader(getInputStream()));
     }
 
+    /**
+     * getInputStream
+     */
     @Override
     public ServletInputStream getInputStream() throws IOException {
 
@@ -49,7 +55,7 @@ public class RequestWrapper extends HttpServletRequestWrapper {
             }
 
             @Override
-            public void setReadListener(ReadListener readListener) {
+            public void setReadListener(final ReadListener readListener) {
 
             }
 
