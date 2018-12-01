@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import com.personal.test.demo.filter.util.HttpClientUtil;
 import com.personal.test.demo.filter.util.RemoteResponseResult;
+import com.personal.test.demo.filter.util.Switch;
 import com.personal.test.demo.filter.util.RemoteResponseResult.Pair;
 import com.personal.test.demo.filter.wrapper.RequestWrapper;
 import com.personal.test.demo.filter.wrapper.ResponseWrapper;
@@ -49,9 +50,8 @@ public final class DemoFilter implements Filter {
             return;
         }
 
-        if (!this.isUrlMatch(req.getRequestURI())) {
-            chain.doFilter(request, response);
-            return;
+        if (Switch.getInstance().isUrlOpen(req.getRequestURI()) && Switch.getInstance().isGlobalSwitchOpen()) {
+            useRemote = false;
         }
 
         RequestWrapper wrapperRequest = new RequestWrapper(req);
@@ -122,7 +122,7 @@ public final class DemoFilter implements Filter {
     private RemoteResponseResult remoteCall(final HttpServletRequest req)
             throws ClientProtocolException, IOException {
         String method = req.getMethod();
-        String url = "http://192.168.0.103:9000" + req.getRequestURI();
+        String url = Switch.getInstance().addressOfUrl(req.getRequestURI()) + req.getRequestURI();
         if ("GET".equalsIgnoreCase(method)) {
             return HttpClientUtil.getInstance().get(url, req);
         } else if ("POST".equalsIgnoreCase(method)) {
@@ -130,10 +130,6 @@ public final class DemoFilter implements Filter {
         } else {
             throw new RuntimeException("Unsupport http method: " + method);
         }
-    }
-
-    private boolean isUrlMatch(final String uri) {
-        return uri.startsWith("/hello") || uri.startsWith("/people");
     }
 
 }
