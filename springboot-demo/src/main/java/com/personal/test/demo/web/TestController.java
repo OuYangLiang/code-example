@@ -1,9 +1,16 @@
 package com.personal.test.demo.web;
 
+import java.util.Date;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.personal.test.demo.mod1.dao.Test1Dao;
@@ -18,24 +25,32 @@ public class TestController {
     @Autowired
     private Test2Dao dao2;
 
-    /**
-     * /hello方法
-     */
     @RequestMapping("/hello/{id}")
-    public String hello(@PathVariable final int id) {
-        System.out.println("hello in controller called...");
-        return "hello";
+    public Result getResult(@PathVariable long id, @RequestParam(required = false, value = "name") String name,
+            HttpServletRequest req, HttpServletResponse resp) {
+
+        Result rlt = new Result();
+        rlt.setId(id);
+        rlt.setUserName("欧阳亮");
+        rlt.setEmail("ouyanggod@gmail");
+        rlt.setDate(new Date());
+
+        if (name != null) {
+            rlt.setUserName(name);
+        }
+
+        resp.addHeader("addedHeader", "abcdefg");
+        resp.addCookie(new Cookie("addedCookie", "12345"));
+
+        return rlt;
     }
 
-    /**
-     * getResult方法
-     */
     @RequestMapping("/people")
-    public People getResult(@RequestBody final People p) {
-        People p1 = new People();
-        p1.setName("1234512345");
-        p1.setAge(0);
-        return p1;
+    public People getResult(@RequestBody People p) {
+        People rlt = new People();
+        rlt.setName(p.getName());
+        rlt.setAge(1 + p.getAge());
+        return rlt;
     }
 
     /**
@@ -62,5 +77,45 @@ public class TestController {
         int a = 1 / 0;
 
         return Integer.toString(a);
+    }
+
+    static class Result {
+        private Long id;
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
+        public String getUserName() {
+            return userName;
+        }
+
+        public void setUserName(String userName) {
+            this.userName = userName;
+        }
+
+        public String getEmail() {
+            return email;
+        }
+
+        public void setEmail(String email) {
+            this.email = email;
+        }
+
+        public Date getDate() {
+            return date;
+        }
+
+        public void setDate(Date date) {
+            this.date = date;
+        }
+
+        private String userName;
+        private String email;
+        private Date date;
     }
 }
