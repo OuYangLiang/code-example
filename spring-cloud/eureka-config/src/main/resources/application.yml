@@ -9,5 +9,12 @@ spring:
           username: xxx
           password: 'xxx'
 
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:1001/eureka/
+    register-with-eureka: true
+    fetch-registry: false
+
 server:
   port: 9999
