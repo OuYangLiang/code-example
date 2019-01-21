@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: eureka-client
+  cloud:
+    config:
+      discovery:
+        enabled: true
+        service-id: eureka-config
+      profile: dev
+      label: master
+
+server:
+  port: 2001
+  
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:1001/eureka/
+    register-with-eureka: true
+    fetch-registry: true
