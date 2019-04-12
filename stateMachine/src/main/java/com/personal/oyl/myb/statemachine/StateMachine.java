@@ -1,5 +1,5 @@
 package com.personal.oyl.myb.statemachine;
 
-public interface StateMachine {
-    State next(State state, Event event, Object context);
+public interface StateMachine<S extends Enum<S>, E extends Enum<E>> {
+    S next(S state, E event, Object context);
 }

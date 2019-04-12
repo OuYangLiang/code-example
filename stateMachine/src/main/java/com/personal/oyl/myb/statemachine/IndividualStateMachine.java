@@ -1,6 +1,6 @@
 package com.personal.oyl.myb.statemachine;
 
-public class IndividualStateMachine implements StateMachine {
+public class IndividualStateMachine implements StateMachine<State, Event> {
 
     @Override
     public State next(State state, Event event, Object context) {

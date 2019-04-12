@@ -1,10 +1,10 @@
 package com.personal.oyl.myb.statemachine;
 
 public final class StateMachineFactory {
-    private static StateMachine individual;
-    private static StateMachine enterprise;
+    private static StateMachine<State, Event> individual;
+    private static StateMachine<State, Event> enterprise;
     
-    public static StateMachine getMachine(MemberType type) {
+    public static StateMachine<State, Event> getMachine(MemberType type) {
         
         if (MemberType.individual.equals(type)) {
             if (null == individual) {
