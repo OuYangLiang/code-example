@@ -9,11 +9,12 @@ import org.elasticsearch.client.RestHighLevelClient;
 public final class ConnectionHolder {
     private static volatile RestHighLevelClient instance;
     
-    private ConnectionHolder() {}
+    private ConnectionHolder() {
+    }
     
     public static RestHighLevelClient getClient() {
         if (null == instance) {
-            synchronized(ConnectionHolder.class) {
+            synchronized (ConnectionHolder.class) {
                 if (null == instance) {
                     instance = new RestHighLevelClient(
                             RestClient.builder(
@@ -27,7 +28,7 @@ public final class ConnectionHolder {
     
     public static void close() {
         if (null != instance) {
-            synchronized(ConnectionHolder.class) {
+            synchronized (ConnectionHolder.class) {
                 if (null != instance) {
                     try {
                         instance.close();

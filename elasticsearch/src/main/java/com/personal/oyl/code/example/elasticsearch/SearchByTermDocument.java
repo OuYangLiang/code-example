@@ -20,14 +20,14 @@ public class SearchByTermDocument {
         SearchRequest searchRequest = new SearchRequest();
         searchRequest.indices("employee");
         
-        SearchSourceBuilder sourceBuilder = new SearchSourceBuilder(); 
+        SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
         sourceBuilder.query(QueryBuilders.termQuery("employeeName", "Name 888"));
         sourceBuilder.fetchSource(new String[] {"employeeId"}, null);
         
         sourceBuilder.sort(new FieldSortBuilder("employeeId").order(SortOrder.DESC));
-        sourceBuilder.from(0); 
+        sourceBuilder.from(0);
         sourceBuilder.size(10);
-        sourceBuilder.timeout(new TimeValue(60, TimeUnit.SECONDS)); 
+        sourceBuilder.timeout(new TimeValue(60, TimeUnit.SECONDS));
         
         searchRequest.source(sourceBuilder);
         

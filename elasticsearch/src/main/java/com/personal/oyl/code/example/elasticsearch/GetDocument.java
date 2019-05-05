@@ -23,15 +23,12 @@ public class GetDocument {
         String id = getResponse.getId();
         if (getResponse.isExists()) {
             long version = getResponse.getVersion();
-            String sourceAsString = getResponse.getSourceAsString();        
+            String sourceAsString = getResponse.getSourceAsString();
             System.out.println(sourceAsString);
             System.out.println(index);
             System.out.println(id);
             System.out.println(version);
-        } else {
-            
         }
-        
         
         ConnectionHolder.close();
     }
