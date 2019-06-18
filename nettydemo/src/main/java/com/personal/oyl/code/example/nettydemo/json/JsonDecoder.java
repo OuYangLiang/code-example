@@ -23,6 +23,6 @@ public class JsonDecoder extends MessageToMessageDecoder<ByteBuf> {
         array = new byte[length];
         byteBuf.getBytes(byteBuf.readerIndex(), array, 0, length);
         System.out.println(new String(array));
-        list.add(gson.fromJson(new String(array), Object.class));
+        list.add(gson.fromJson(new String(array), Message.class));
     }
 }

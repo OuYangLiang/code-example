@@ -1,6 +1,5 @@
 package com.personal.oyl.code.example.nettydemo.json;
 
-import com.personal.oyl.code.example.nettydemo.msgpack.UserInfo;
 import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
 

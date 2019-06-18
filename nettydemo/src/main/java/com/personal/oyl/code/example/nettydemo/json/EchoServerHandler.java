@@ -10,9 +10,8 @@ import io.netty.channel.ChannelHandlerContext;
 public class EchoServerHandler extends ChannelHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
-        System.out.println(msg.getClass().getName());
-        System.out.println("Server receive the json message : " + msg);
-        ctx.writeAndFlush(msg);
+        Message m = (Message) msg;
+        System.out.println("Server receive the json message : " + m);
     }
 
     @Override

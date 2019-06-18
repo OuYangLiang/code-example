@@ -23,4 +23,12 @@ public class Message {
     public void setMsgInfo(String msgInfo) {
         this.msgInfo = msgInfo;
     }
+
+    @Override
+    public String toString() {
+        return "Message{" +
+                "msgId=" + msgId +
+                ", msgInfo='" + msgInfo + '\'' +
+                '}';
+    }
 }
