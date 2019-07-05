@@ -5,6 +5,8 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
 
+import java.nio.charset.StandardCharsets;
+
 /**
  * @author OuYang Liang
  * @since 2019-06-05
@@ -15,7 +17,7 @@ public class TimeClientHandler extends ChannelHandlerAdapter {
     private byte[] req;
 
     public TimeClientHandler() {
-        req = ("QUERY TIME ORDER" + System.getProperty("line.separator")).getBytes();
+        req = ("QUERY TIME ORDER" + System.getProperty("line.separator")).getBytes(StandardCharsets.UTF_8);
     }
 
     @Override

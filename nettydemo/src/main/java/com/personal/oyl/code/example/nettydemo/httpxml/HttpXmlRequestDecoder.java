@@ -7,6 +7,7 @@ import io.netty.handler.codec.http.FullHttpRequest;
 import org.dom4j.DocumentException;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
@@ -23,7 +24,7 @@ public class HttpXmlRequestDecoder extends MessageToMessageDecoder<FullHttpReque
         array = new byte[length];
         body.getBytes(body.readerIndex(), array, 0, length);
 
-        HttpXmlRequest request = new HttpXmlRequest(msg, Order.parseFrom(new String(array)));
+        HttpXmlRequest request = new HttpXmlRequest(msg, Order.parseFrom(new String(array, StandardCharsets.UTF_8)));
         out.add(request);
     }
 }

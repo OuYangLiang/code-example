@@ -13,6 +13,8 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.DelimiterBasedFrameDecoder;
 import io.netty.handler.codec.string.StringDecoder;
 
+import java.nio.charset.StandardCharsets;
+
 /**
  * @author OuYang Liang
  * @since 2019-06-06
@@ -28,7 +30,7 @@ public class EchoClient {
                     .handler(new ChannelInitializer<SocketChannel>() { // (4)
                         @Override
                         public void initChannel(SocketChannel ch) {
-                            ByteBuf delimiter = Unpooled.copiedBuffer("$_".getBytes());
+                            ByteBuf delimiter = Unpooled.copiedBuffer("$_".getBytes(StandardCharsets.UTF_8));
                             ch.pipeline().addLast(new DelimiterBasedFrameDecoder(1024, delimiter));
                             ch.pipeline().addLast(new StringDecoder());
                             ch.pipeline().addLast(new EchoClientHandler());

@@ -6,6 +6,8 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 
+import java.nio.charset.StandardCharsets;
+
 
 /**
  * @author OuYang Liang
@@ -17,7 +19,7 @@ public class JsonEncoder extends MessageToByteEncoder<Object> {
 
     @Override
     protected void encode(ChannelHandlerContext channelHandlerContext, Object msg, ByteBuf byteBuf) {
-        byte[] raw = gson.toJson(msg).getBytes();
+        byte[] raw = gson.toJson(msg).getBytes(StandardCharsets.UTF_8);
         byteBuf.writeBytes(raw);
     }
 }

@@ -9,6 +9,7 @@ import org.dom4j.io.SAXReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 
 /**
  * @author OuYang Liang
@@ -56,7 +57,7 @@ public class Order {
     public static Order parseFrom(String xml) throws DocumentException, IOException {
         SAXReader reader = new SAXReader();
         Document doc;
-        try (ByteArrayInputStream bais = new ByteArrayInputStream(xml.getBytes())) {
+        try (ByteArrayInputStream bais = new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8))) {
             doc = reader.read(bais);
         }
         Element root = doc.getRootElement();

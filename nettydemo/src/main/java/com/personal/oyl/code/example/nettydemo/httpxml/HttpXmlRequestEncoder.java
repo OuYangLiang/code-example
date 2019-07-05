@@ -8,6 +8,7 @@ import io.netty.handler.codec.http.*;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
@@ -18,7 +19,7 @@ public class HttpXmlRequestEncoder extends MessageToMessageEncoder<HttpXmlReques
 
     @Override
     protected void encode(ChannelHandlerContext ctx, HttpXmlRequest msg, List<Object> out) throws IOException {
-        ByteBuf body = Unpooled.copiedBuffer(msg.getBody().toXml().getBytes());
+        ByteBuf body = Unpooled.copiedBuffer(msg.getBody().toXml().getBytes(StandardCharsets.UTF_8));
         FullHttpRequest request = msg.getRequest();
         if (request == null) {
             request = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "/", body);

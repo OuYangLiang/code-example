@@ -5,6 +5,8 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
 
+import java.nio.charset.StandardCharsets;
+
 /**
  * @author OuYang Liang
  * @since 2019-06-05
@@ -20,7 +22,7 @@ public class TimeServerHandler extends ChannelHandlerAdapter {
         String currentTime = "QUERY TIME ORDER".equalsIgnoreCase(body) ? new java.util.Date(System.currentTimeMillis()).toString() : "BAD ORDER";
         currentTime = currentTime + System.getProperty("line.separator");
         System.out.println("Current Time is :" + currentTime);
-        ByteBuf resp = Unpooled.copiedBuffer(currentTime.getBytes());
+        ByteBuf resp = Unpooled.copiedBuffer(currentTime.getBytes(StandardCharsets.UTF_8));
         ctx.writeAndFlush(resp);
     }
 

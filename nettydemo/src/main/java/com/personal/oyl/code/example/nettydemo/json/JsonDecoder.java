@@ -6,6 +6,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
@@ -22,7 +23,7 @@ public class JsonDecoder extends MessageToMessageDecoder<ByteBuf> {
         final int length = byteBuf.readableBytes();
         array = new byte[length];
         byteBuf.getBytes(byteBuf.readerIndex(), array, 0, length);
-        System.out.println(new String(array));
-        list.add(gson.fromJson(new String(array), Message.class));
+        System.out.println(new String(array, StandardCharsets.UTF_8));
+        list.add(gson.fromJson(new String(array, StandardCharsets.UTF_8), Message.class));
     }
 }

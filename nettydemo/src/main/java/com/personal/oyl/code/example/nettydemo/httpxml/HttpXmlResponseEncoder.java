@@ -6,6 +6,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageEncoder;
 import io.netty.handler.codec.http.*;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
@@ -15,7 +16,7 @@ import java.util.List;
 public class HttpXmlResponseEncoder extends MessageToMessageEncoder<HttpXmlResponse> {
     @Override
     protected void encode(ChannelHandlerContext ctx, HttpXmlResponse msg, List<Object> out) throws Exception {
-        ByteBuf body = Unpooled.copiedBuffer(msg.getResult().toXml().getBytes());
+        ByteBuf body = Unpooled.copiedBuffer(msg.getResult().toXml().getBytes(StandardCharsets.UTF_8));
 
         FullHttpResponse response = msg.getHttpResponse();
         if (response == null) {

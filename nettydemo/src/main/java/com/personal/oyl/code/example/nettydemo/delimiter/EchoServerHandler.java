@@ -5,6 +5,8 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
 
+import java.nio.charset.StandardCharsets;
+
 /**
  * @author OuYang Liang
  * @since 2019-06-06
@@ -17,7 +19,7 @@ public class EchoServerHandler extends ChannelHandlerAdapter {
         String body = (String) msg;
         System.out.println("This is " + ++counter + " times receive client : [" + body + "]");
         body += "$_";
-        ByteBuf echo = Unpooled.copiedBuffer(body.getBytes());
+        ByteBuf echo = Unpooled.copiedBuffer(body.getBytes(StandardCharsets.UTF_8));
         ctx.writeAndFlush(echo);
     }
 

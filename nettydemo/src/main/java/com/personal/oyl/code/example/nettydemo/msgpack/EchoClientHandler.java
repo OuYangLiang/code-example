@@ -8,7 +8,6 @@ import io.netty.channel.ChannelHandlerContext;
  * @since 2019-06-06
  */
 public class EchoClientHandler extends ChannelHandlerAdapter {
-    private int counter = 0;
     private final int sendNumber;
 
     public EchoClientHandler(int sendNumber) {
