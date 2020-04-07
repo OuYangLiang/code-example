@@ -1,7 +1,12 @@
+storm/logs
 target
 build
 .classpath
 .project
 .settings
 .DS_Store
-storm/logs
+*.iws
+*.iml
+*.ipr
+/.idea/
+.idea
