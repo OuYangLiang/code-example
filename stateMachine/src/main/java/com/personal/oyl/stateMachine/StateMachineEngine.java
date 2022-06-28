@@ -25,7 +25,7 @@ public final class StateMachineEngine {
         return holder.get(key);
     }
     
-    private static Map<String, StateHandler> holder;
+    private static volatile Map<String, StateHandler> holder;
     
     private static void init() {
         holder = new HashMap<>();
